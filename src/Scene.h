@@ -1,3 +1,9 @@
+/*
+Author: Esteban Pereira das Neves
+Project: RESET - A Text Adventure Game
+Course: CPSC-25-12703 (Spring 2026)
+*/
+
 #ifndef SCENE_H
 #define SCENE_H
 
