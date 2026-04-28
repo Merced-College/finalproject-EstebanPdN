@@ -16,9 +16,6 @@ void GameEngine::start() {
     PlayerState player;
     ResetManager resetManager;
 
-    cout << "Deaths so far: " << player.getDeaths() << endl;
-    cout << endl;
-
     Scene entrance(
         1,
         "You wake up in a dark room.\n"
@@ -33,10 +30,36 @@ void GameEngine::start() {
 
     entrance.displayScene();
 
-    cout << "Testing the reset system..." << endl;
+    int playerChoice;
 
-    resetManager.triggerReset(player);
-    resetManager.displayResetMessage(player);
+    cout << "Enter your choice: ";
+    cin >> playerChoice;
 
-    cout << "Deaths after reset: " << player.getDeaths() << endl;
+    cout << endl;
+
+    if (playerChoice == 1) {
+        cout << "You pull on the locked door, but it does not move." << endl;
+        cout << "A cold voice whispers: Not yet." << endl;
+    } else if (playerChoice == 2) {
+        cout << "You walk into the dark hallway." << endl;
+        cout << "The floor suddenly disappears beneath you." << endl;
+
+        resetManager.triggerReset(player);
+        resetManager.displayResetMessage(player);
+    } else if (playerChoice == 3) {
+        cout << "You search the room carefully." << endl;
+        cout << "You find a small mark on the wall: 314." << endl;
+        cout << "Somehow, you feel like this number matters." << endl;
+
+        player.setKnowsSecret(true);
+    } else {
+        cout << "Invalid choice. The room stays silent." << endl;
+    }
+
+    cout << endl;
+    cout << "Deaths: " << player.getDeaths() << endl;
+
+    if (player.getKnowsSecret()) {
+        cout << "Remembered clue: 314" << endl;
+    }
 }
