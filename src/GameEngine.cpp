@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 #include "Scene.h"
 #include "Choice.h"
+#include "PlayerState.h"
 
 using namespace std;
 
@@ -9,6 +10,11 @@ void GameEngine::start() {
     cout << "==============================" << endl;
     cout << "RESET - A Text Adventure Game" << endl;
     cout << "==============================" << endl;
+    cout << endl;
+
+    PlayerState player;
+
+    cout << "Deaths so far: " << player.getDeaths() << endl;
     cout << endl;
 
     Scene entrance(
@@ -25,5 +31,5 @@ void GameEngine::start() {
 
     entrance.displayScene();
 
-    cout << "For now, the game only displays the first scene." << endl;
+    cout << "For now, the game displays the first scene and the player state." << endl;
 }
