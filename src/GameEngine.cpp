@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Choice.h"
 #include "PlayerState.h"
+#include "ResetManager.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ void GameEngine::start() {
     cout << endl;
 
     PlayerState player;
+    ResetManager resetManager;
 
     cout << "Deaths so far: " << player.getDeaths() << endl;
     cout << endl;
@@ -31,5 +33,10 @@ void GameEngine::start() {
 
     entrance.displayScene();
 
-    cout << "For now, the game displays the first scene and the player state." << endl;
+    cout << "Testing the reset system..." << endl;
+
+    resetManager.triggerReset(player);
+    resetManager.displayResetMessage(player);
+
+    cout << "Deaths after reset: " << player.getDeaths() << endl;
 }
