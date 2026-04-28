@@ -29,15 +29,21 @@ void printDeathHeader() {
     cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 }
 
+void printWakeUpText() {
+    cout << endl;
+    cout << "You wake up in a dark room." << endl;
+    cout << "The same cold floor. The same locked door." << endl;
+    cout << "Nobody around you, just silence." << endl;
+    cout << "Every reset brings you back here." << endl;
+}
+
 map<int, Scene> GameEngine::buildScenes() {
     map<int, Scene> scenes;
 
     Scene entrance(
         1,
-        "You wake up in a dark room.\n"
-        "The same cold floor. The same locked door.\n"
-        "Nobody around you, just silence.\n"
-        "Every reset brings you back here."
+        "This is an empty room.\n"
+        "There are several ways forward, but no clear way out."
     );
     entrance.addChoice(Choice("Go to the locked door.", 2));
     entrance.addChoice(Choice("Enter the hallway with three doors.", 3));
@@ -72,9 +78,9 @@ map<int, Scene> GameEngine::buildScenes() {
         4,
         "You search the entrance room carefully.\n"
         "Behind a loose brick, you find a scratched message:\n"
-        "CODE: 314"
+        "CODE: 314729"
     );
-    searchRoom.addChoice(Choice("Remember the code and return.", 102));
+    searchRoom.addChoice(Choice("Memorize the code and return.", 102));
     searchRoom.addChoice(Choice("Return without studying it.", 1));
     searchRoom.addChoice(Choice("Exit game.", 0));
 
@@ -103,12 +109,13 @@ map<int, Scene> GameEngine::buildScenes() {
     Scene ventilationRoom(
         7,
         "You find a small control room.\n"
-        "There is a switch labeled VENTILATION.\n"
-        "A warning says: GAS LEAK IN LOWER ROOM.\n"
+        "There is a yellow button and a blue button on the wall.\n"
+        "A warning sign says: GAS SYSTEM CONTROL.\n"
         "Near the corner, you notice a hole in the floor."
     );
-    ventilationRoom.addChoice(Choice("Turn on the ventilation switch.", 100));
-    ventilationRoom.addChoice(Choice("Ignore the switch and open the trapdoor.", 95));
+    ventilationRoom.addChoice(Choice("Press the yellow button.", 100));
+    ventilationRoom.addChoice(Choice("Press the blue button.", 108));
+    ventilationRoom.addChoice(Choice("Crawl through the hole in the floor.", 109));
     ventilationRoom.addChoice(Choice("Go back.", 6));
     ventilationRoom.addChoice(Choice("Exit game.", 0));
 
@@ -264,6 +271,8 @@ void GameEngine::start() {
     cout << "A Text Adventure Game" << endl;
     cout << "Learn. Die. Remember. Escape." << endl;
 
+    printWakeUpText();
+
     while (!player.getGameOver()) {
         if (currentSceneId == 0) {
             player.setGameOver(true);
@@ -343,10 +352,10 @@ void GameEngine::start() {
             handleDeath(
                 player,
                 resetManager,
-                "You open the trapdoor without turning on the ventilation.\n"
+                "You open the hatch without ventilation.\n"
                 "The lower room is full of gas.\n"
                 "You breathe once, then collapse.",
-                "Turn on ventilation before entering the gas room."
+                "Ventilation must be turned on before entering the gas room."
             );
             currentSceneId = 1;
             continue;
@@ -383,7 +392,7 @@ void GameEngine::start() {
         if (currentSceneId == 98) {
             if (player.knowsDoorCode()) {
                 cout << endl;
-                cout << "You enter the remembered code: 314." << endl;
+                cout << "You enter the remembered code: 314729." << endl;
                 cout << "The keypad turns green." << endl;
                 currentSceneId = 10;
             } else {
@@ -426,12 +435,12 @@ void GameEngine::start() {
             player.unlockGasSwitch();
 
             cout << endl;
-            cout << "You turn on the ventilation switch." << endl;
-            cout << "The pipes start shaking, and the green gas begins to clear." << endl;
-            cout << "Then you notice a hole in the floor." << endl;
-            cout << "You crawl through it, and it leads you back to the entrance room." << endl;
+            cout << "You press the yellow button." << endl;
+            cout << "The ventilation system is now running." << endl;
+            cout << "The gas below should be clearing." << endl;
+            cout << "Memory unlocked: Ventilation must be turned on before entering the gas room." << endl;
 
-            currentSceneId = 1;
+            currentSceneId = 7;
             continue;
         }
 
@@ -447,7 +456,7 @@ void GameEngine::start() {
                     resetManager,
                     "You open the hidden floor hatch without checking the air below.\n"
                     "Gas rises from the lower room and fills your lungs.",
-                    "The lower hatch is dangerous without ventilation."
+                    "Ventilation must be turned on before entering the gas room."
                 );
                 currentSceneId = 1;
             }
@@ -460,7 +469,7 @@ void GameEngine::start() {
 
             cout << endl;
             cout << "You study the scratched message carefully." << endl;
-            cout << "Memory unlocked: Door code 314" << endl;
+            cout << "Memory unlocked: Door code 314729" << endl;
 
             currentSceneId = 1;
             continue;
@@ -534,9 +543,45 @@ void GameEngine::start() {
             cout << endl;
             cout << "You open the right door." << endl;
             cout << "Nothing attacks you." << endl;
-            cout << "Memory unlocked: The right door seems safe." << endl;
+            cout << "Memory unlocked: Apparently, the right door is the safe one." << endl;
 
             currentSceneId = 13;
+            continue;
+        }
+
+        if (currentSceneId == 108) {
+            handleDeath(
+                player,
+                resetManager,
+                "You press the blue button.\n"
+                "A loud alarm starts ringing.\n"
+                "Gas floods the building from the vents, and you collapse before reaching the door.",
+                "Do not press the blue button."
+            );
+            currentSceneId = 1;
+            continue;
+        }
+
+        if (currentSceneId == 109) {
+            if (player.knowsGasSwitch()) {
+                cout << endl;
+                cout << "You crawl through the hole in the floor." << endl;
+                cout << "The narrow passage twists under the building." << endl;
+                cout << "After a few moments, it leads you back to the entrance room." << endl;
+
+                currentSceneId = 1;
+            } else {
+                handleDeath(
+                    player,
+                    resetManager,
+                    "You crawl through the hole in the floor.\n"
+                    "The tunnel below is filled with gas.\n"
+                    "You try to turn back, but it is too late.",
+                    "Ventilation must be turned on before entering the gas room."
+                );
+                currentSceneId = 1;
+            }
+
             continue;
         }
 
@@ -555,7 +600,7 @@ void GameEngine::start() {
             player.setTrueEndingReached(true);
             player.setGameOver(true);
 
-            printSceneHeader("TRUE ENDING");
+            cout << endl;
             cout << "You escaped after learning from every reset." << endl;
             showPlayerMemory(player);
             break;

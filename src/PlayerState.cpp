@@ -73,7 +73,7 @@ void PlayerState::setTrueEndingReached(bool value) {
 
 void PlayerState::unlockDoorCode() {
     remembersDoorCode = true;
-    addMemory("Door code: 314");
+    addMemory("Door code: 314729");
 }
 
 void PlayerState::unlockLeftDoorDeath() {
@@ -88,7 +88,7 @@ void PlayerState::unlockFrontDoorDeath() {
 
 void PlayerState::unlockSafeDoor() {
     remembersSafeDoor = true;
-    addMemory("After testing the other doors, the right door seems safe.");
+    addMemory("Apparently, the right door is the safe one.");
 }
 
 void PlayerState::unlockHallwayPattern() {
