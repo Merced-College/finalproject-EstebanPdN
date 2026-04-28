@@ -37,6 +37,14 @@ void printWakeUpText() {
     cout << "Every reset brings you back here." << endl;
 }
 
+/*
+Scene Setup
+
+This function creates all of the rooms in the game and stores them
+inside a map using scene ID numbers. Each scene has a description
+and a list of choices that point to the next scene or special action.
+
+*/
 map<int, Scene> GameEngine::buildScenes() {
     map<int, Scene> scenes;
 
@@ -255,6 +263,18 @@ void GameEngine::showPlayerMemory(const PlayerState& player) const {
     cout << endl;
 }
 
+/*
+Reset Memory System
+
+This function handles what happens when the player dies. It prints
+the death message, saves the memory gained from that mistake, increases
+the death counter, and resets temporary progress for the next run.
+
+The game is based on learning through resets.
+The player loses temporary progress, like the position ot the active ventilation, but keeps
+important memories, like the door code or which rooms are dangerous.
+
+*/
 void GameEngine::handleDeath(PlayerState& player, ResetManager& resetManager, string deathMessage, string memoryGained) {
     printDeathHeader();
 
@@ -264,6 +284,17 @@ void GameEngine::handleDeath(PlayerState& player, ResetManager& resetManager, st
     resetManager.triggerReset(player);
     resetManager.displayResetMessage(player, memoryGained);
 }
+
+/*
+Main Game Loop and Action Validation
+
+This function runs the main game loop. It displays the current room,
+shows the player's memories, gets the player's input, and moves the
+player to the next scene.
+
+Some choices are special actions instead of normal scenes. These actions
+are checked before the player moves forward.
+*/
 
 void GameEngine::start() {
     PlayerState player;
