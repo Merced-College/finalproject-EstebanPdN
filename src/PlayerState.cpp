@@ -103,7 +103,7 @@ void PlayerState::unlockMirrorWord() {
 
 void PlayerState::unlockGasSwitch() {
     remembersGasSwitch = true;
-    addMemory("The gas room is safe only after using the ventilation switch.");
+    addMemory("Ventilation must be turned on before entering the gas room.");
 }
 
 void PlayerState::unlockFakeExit() {

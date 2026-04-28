@@ -11,13 +11,15 @@
 using namespace std;
 
 /*
-Controls the main game loop, scene navigation, player input,
-death events, reset logic, and all the conditions.
+This manages the main game loop, scene navigation, player input,
+death events, reset logic, and other conditions.
 */
 
 class GameEngine {
 private:
     map<int, Scene> buildScenes();
+    string getSceneName(int sceneId) const;
+
     void showPlayerMemory(const PlayerState& player) const;
     void handleDeath(PlayerState& player, ResetManager& resetManager, string deathMessage, string memoryGained);
 
