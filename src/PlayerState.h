@@ -7,12 +7,8 @@
 using namespace std;
 
 /*
-Author: Esteban Pereira das Neves
-Class: PlayerState
-
-Description:
-Stores the player's long-term memory and game progress.
-Temporary progress is lost after death, but memories remain.
+Stores the player's long-term memory and temporary progress
+Memories stay after death, but temporary progress is reset
 */
 
 class PlayerState {
@@ -29,6 +25,8 @@ private:
     bool remembersMirrorWord;
     bool remembersGasSwitch;
     bool remembersFakeExit;
+
+    bool ventilationActive;
 
     vector<string> memoryLog;
 
@@ -48,6 +46,8 @@ public:
     bool knowsGasSwitch() const;
     bool knowsFakeExit() const;
 
+    bool getVentilationActive() const;
+
     void addDeath();
     void setGameOver(bool value);
     void setTrueEndingReached(bool value);
@@ -60,6 +60,8 @@ public:
     void unlockMirrorWord();
     void unlockGasSwitch();
     void unlockFakeExit();
+
+    void setVentilationActive(bool value);
 
     void addMemory(string memory);
     vector<string> getMemoryLog() const;

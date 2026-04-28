@@ -13,6 +13,8 @@ PlayerState::PlayerState() {
     remembersMirrorWord = false;
     remembersGasSwitch = false;
     remembersFakeExit = false;
+
+    ventilationActive = false;
 }
 
 int PlayerState::getDeaths() const {
@@ -57,6 +59,10 @@ bool PlayerState::knowsGasSwitch() const {
 
 bool PlayerState::knowsFakeExit() const {
     return remembersFakeExit;
+}
+
+bool PlayerState::getVentilationActive() const {
+    return ventilationActive;
 }
 
 void PlayerState::addDeath() {
@@ -111,6 +117,10 @@ void PlayerState::unlockFakeExit() {
     addMemory("The bright exit is fake.");
 }
 
+void PlayerState::setVentilationActive(bool value) {
+    ventilationActive = value;
+}
+
 void PlayerState::addMemory(string memory) {
     if (memory == "") {
         return;
@@ -131,4 +141,5 @@ vector<string> PlayerState::getMemoryLog() const {
 
 void PlayerState::resetForNewRun() {
     gameOver = false;
+    ventilationActive = false;
 }

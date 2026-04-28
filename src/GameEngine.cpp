@@ -221,7 +221,7 @@ string GameEngine::getSceneName(int sceneId) const {
     } else if (sceneId == 11) {
         return "FINAL DOOR";
     } else if (sceneId == 12) {
-        return "TRUE ENDING";
+        return "YOU ESCAPED";
     } else if (sceneId == 13) {
         return "OBSERVATION ROOM";
     }
@@ -233,6 +233,12 @@ void GameEngine::showPlayerMemory(const PlayerState& player) const {
     cout << endl;
     cout << "Current loop status" << endl;
     cout << "Deaths: " << player.getDeaths() << endl;
+
+    if (player.getVentilationActive()) {
+        cout << "Ventilation: active" << endl;
+    } else {
+        cout << "Ventilation: off" << endl;
+    }
 
     vector<string> memories = player.getMemoryLog();
 
@@ -433,6 +439,7 @@ void GameEngine::start() {
 
         if (currentSceneId == 100) {
             player.unlockGasSwitch();
+            player.setVentilationActive(true);
 
             cout << endl;
             cout << "You press the yellow button." << endl;
@@ -445,16 +452,16 @@ void GameEngine::start() {
         }
 
         if (currentSceneId == 101) {
-            if (player.knowsGasSwitch()) {
+            if (player.getVentilationActive()) {
                 cout << endl;
                 cout << "You open the hidden floor hatch." << endl;
-                cout << "Because you remember the ventilation system, you avoid the gas trap." << endl;
+                cout << "Because the ventilation is active right now, the gas trap is cleared." << endl;
                 currentSceneId = 8;
             } else {
                 handleDeath(
                     player,
                     resetManager,
-                    "You open the hidden floor hatch without checking the air below.\n"
+                    "You open the hidden floor hatch without active ventilation.\n"
                     "Gas rises from the lower room and fills your lungs.",
                     "Ventilation must be turned on before entering the gas room."
                 );
@@ -563,7 +570,7 @@ void GameEngine::start() {
         }
 
         if (currentSceneId == 109) {
-            if (player.knowsGasSwitch()) {
+            if (player.getVentilationActive()) {
                 cout << endl;
                 cout << "You crawl through the hole in the floor." << endl;
                 cout << "The narrow passage twists under the building." << endl;
@@ -574,7 +581,7 @@ void GameEngine::start() {
                 handleDeath(
                     player,
                     resetManager,
-                    "You crawl through the hole in the floor.\n"
+                    "You crawl through the hole in the floor without active ventilation.\n"
                     "The tunnel below is filled with gas.\n"
                     "You try to turn back, but it is too late.",
                     "Ventilation must be turned on before entering the gas room."
