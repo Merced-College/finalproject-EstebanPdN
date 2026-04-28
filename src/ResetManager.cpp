@@ -10,16 +10,20 @@ void ResetManager::triggerReset(PlayerState& player) {
 
 void ResetManager::displayResetMessage(const PlayerState& player, string memoryGained) const {
     cout << endl;
-    cout << "Everything goes black..." << endl;
-    cout << "You wake up again in the same room." << endl;
-    cout << "RESET #" << player.getDeaths() << endl;
+    cout << "========================================" << endl;
+    cout << "              RESET #" << player.getDeaths() << endl;
+    cout << "========================================" << endl;
+    cout << "Everything goes black." << endl;
+    cout << "Your body is gone, but your memory remains." << endl;
+    cout << "You wake up again in the first room." << endl;
     cout << endl;
 
     if (memoryGained != "") {
-        cout << "New memory gained: " << memoryGained << endl;
+        cout << "New memory saved: " << memoryGained << endl;
     }
 
-    cout << "You lost everything you were carrying." << endl;
-    cout << "But you still remember what happened." << endl;
+    cout << "Temporary progress was lost." << endl;
+    cout << "Important memories were kept." << endl;
+    cout << "========================================" << endl;
     cout << endl;
 }

@@ -10,13 +10,33 @@
 
 using namespace std;
 
+void printDivider() {
+    cout << endl;
+    cout << "----------------------------------------" << endl;
+}
+
+void printSceneHeader(string title) {
+    cout << endl;
+    cout << "========================================" << endl;
+    cout << "              " << title << endl;
+    cout << "========================================" << endl;
+}
+
+void printDeathHeader() {
+    cout << endl;
+    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    cout << "                 YOU DIED" << endl;
+    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+}
+
 map<int, Scene> GameEngine::buildScenes() {
     map<int, Scene> scenes;
 
     Scene entrance(
         1,
         "You wake up in a dark room.\n"
-        "The same cold floor. The same locked door. The same silence.\n"
+        "The same cold floor. The same locked door.\n"
+        "Nobody around you, just silence.\n"
         "Every reset brings you back here."
     );
     entrance.addChoice(Choice("Go to the locked door.", 2));
@@ -28,10 +48,11 @@ map<int, Scene> GameEngine::buildScenes() {
         2,
         "You stand in front of the locked door.\n"
         "There is a keypad beside it.\n"
-        "The keypad is waiting for a three-digit code."
+        "A warning is scratched into the wall:\n"
+        "WRONG CODE = DETONATION."
     );
-    lockedDoor.addChoice(Choice("Enter a code.", 10));
-    lockedDoor.addChoice(Choice("Press random numbers.", 90));
+    lockedDoor.addChoice(Choice("Enter the code you remember.", 98));
+    lockedDoor.addChoice(Choice("Try a random code.", 90));
     lockedDoor.addChoice(Choice("Go back.", 1));
     lockedDoor.addChoice(Choice("Exit game.", 0));
 
@@ -62,8 +83,8 @@ map<int, Scene> GameEngine::buildScenes() {
         "The plates are old, but some of them still look active.\n"
         "One wrong step could be deadly."
     );
-    patternHallway.addChoice(Choice("Step onto the plates without a plan.", 93));
-    patternHallway.addChoice(Choice("Follow the pattern you remember.", 6));
+    patternHallway.addChoice(Choice("Cross the pressure plates.", 99));
+    patternHallway.addChoice(Choice("Step onto the plates without thinking.", 93));
     patternHallway.addChoice(Choice("Go back to the observation room.", 13));
     patternHallway.addChoice(Choice("Exit game.", 0));
 
@@ -73,7 +94,7 @@ map<int, Scene> GameEngine::buildScenes() {
         "On the wall, a word is written backwards: NEPO.\n"
         "It looks like the room is trying to tell you something."
     );
-    mirrorRoom.addChoice(Choice("Remember the mirror word.", 7));
+    mirrorRoom.addChoice(Choice("Study the backwards word.", 7));
     mirrorRoom.addChoice(Choice("Touch the largest mirror.", 94));
     mirrorRoom.addChoice(Choice("Go back.", 5));
     mirrorRoom.addChoice(Choice("Exit game.", 0));
@@ -82,21 +103,22 @@ map<int, Scene> GameEngine::buildScenes() {
         7,
         "You find a small control room.\n"
         "There is a switch labeled VENTILATION.\n"
-        "A warning says: GAS LEAK IN LOWER ROOM."
+        "A warning says: GAS LEAK IN LOWER ROOM.\n"
+        "On the floor, there is also a metal trapdoor that leads downward."
     );
-    ventilationRoom.addChoice(Choice("Turn on the ventilation switch.", 8));
-    ventilationRoom.addChoice(Choice("Ignore the switch and continue.", 95));
+    ventilationRoom.addChoice(Choice("Turn on the ventilation switch and open the trapdoor.", 100));
+    ventilationRoom.addChoice(Choice("Ignore the switch and open the trapdoor.", 95));
     ventilationRoom.addChoice(Choice("Go back.", 6));
     ventilationRoom.addChoice(Choice("Exit game.", 0));
 
     Scene gasRoom(
         8,
-        "You enter the lower room.\n"
-        "A green fog covers the floor.\n"
-        "If the ventilation is off, this room is deadly."
+        "You climb down through the metal trapdoor.\n"
+        "The lower room is filled with pipes and green fog.\n"
+        "Because the ventilation is running, the gas starts clearing."
     );
-    gasRoom.addChoice(Choice("Walk through the gas room.", 9));
-    gasRoom.addChoice(Choice("Go back.", 7));
+    gasRoom.addChoice(Choice("Walk through the lower room.", 9));
+    gasRoom.addChoice(Choice("Go back up the trapdoor.", 7));
     gasRoom.addChoice(Choice("Exit game.", 0));
 
     Scene fakeExit(
@@ -113,10 +135,11 @@ map<int, Scene> GameEngine::buildScenes() {
         10,
         "The keypad accepts the code.\n"
         "The locked door opens and reveals a control room.\n"
-        "A monitor says: Knowledge survives the reset."
+        "A monitor says: Knowledge survives the reset.\n"
+        "Under the monitor, you notice a hidden floor hatch leading downward."
     );
     controlRoom.addChoice(Choice("Return to the entrance.", 1));
-    controlRoom.addChoice(Choice("Open the hidden lower passage.", 8));
+    controlRoom.addChoice(Choice("Open the hidden floor hatch.", 101));
     controlRoom.addChoice(Choice("Exit game.", 0));
 
     Scene finalDoor(
@@ -145,7 +168,7 @@ map<int, Scene> GameEngine::buildScenes() {
         "A note under the screen says:\n"
         "SAFE STEPS: LEFT, RIGHT, FORWARD."
     );
-    observationRoom.addChoice(Choice("Remember the safe step pattern.", 5));
+    observationRoom.addChoice(Choice("Memorize the safe step pattern.", 5));
     observationRoom.addChoice(Choice("Go back to the three-door hallway.", 3));
     observationRoom.addChoice(Choice("Exit game.", 0));
 
@@ -168,6 +191,7 @@ map<int, Scene> GameEngine::buildScenes() {
 
 void GameEngine::showPlayerMemory(const PlayerState& player) const {
     cout << endl;
+    cout << "Current loop status" << endl;
     cout << "Deaths: " << player.getDeaths() << endl;
 
     vector<string> memories = player.getMemoryLog();
@@ -186,7 +210,8 @@ void GameEngine::showPlayerMemory(const PlayerState& player) const {
 }
 
 void GameEngine::handleDeath(PlayerState& player, ResetManager& resetManager, string deathMessage, string memoryGained) {
-    cout << endl;
+    printDeathHeader();
+
     cout << deathMessage << endl;
 
     player.addMemory(memoryGained);
@@ -202,85 +227,230 @@ void GameEngine::start() {
 
     int currentSceneId = 1;
 
-    cout << "==============================" << endl;
-    cout << "RESET - A Text Adventure Game" << endl;
-    cout << "==============================" << endl;
-    cout << endl;
+    printSceneHeader("RESET");
+    cout << "A Text Adventure Game" << endl;
+    cout << "Learn. Die. Remember. Escape." << endl;
 
     while (!player.getGameOver()) {
         if (currentSceneId == 0) {
             player.setGameOver(true);
-            cout << endl;
+            printDivider();
             cout << "You chose to leave the loop for now." << endl;
             break;
         }
 
+        // Special action: random keypad code.
         if (currentSceneId == 90) {
-            handleDeath(player, resetManager, "The keypad shocks you instantly.", "Random keypad numbers are dangerous.");
+            handleDeath(
+                player,
+                resetManager,
+                "You press random numbers on the keypad.\n"
+                "For one second, everything is silent.\n"
+                "Then the door clicks, a red light turns on, and a hidden bomb explodes.",
+                "Random keypad codes trigger a bomb."
+            );
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: left door death.
         if (currentSceneId == 91) {
             player.unlockLeftDoorDeath();
 
+            handleDeath(
+                player,
+                resetManager,
+                "The left door opens into a room with no floor.\n"
+                "You step forward and fall into darkness.",
+                "The left door kills you."
+            );
+
             if (player.knowsLeftDoorDeath() && player.knowsFrontDoorDeath()) {
                 player.unlockSafeDoor();
             }
 
-            handleDeath(player, resetManager, "The left door opens into a room with no floor. You fall.", "The left door kills you.");
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: front door death.
         if (currentSceneId == 92) {
             player.unlockFrontDoorDeath();
 
+            handleDeath(
+                player,
+                resetManager,
+                "You step through the front door.\n"
+                "Metal spikes shoot out from both walls.",
+                "The front door kills you."
+            );
+
             if (player.knowsLeftDoorDeath() && player.knowsFrontDoorDeath()) {
                 player.unlockSafeDoor();
             }
 
-            handleDeath(player, resetManager, "You step through the front door and metal spikes shoot from the wall.", "The front door kills you.");
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: careless pressure plate death.
         if (currentSceneId == 93) {
-            handleDeath(player, resetManager, "You step on the wrong pressure plate. The hallway collapses.", "Do not cross the pressure plates without the safe pattern.");
+            handleDeath(
+                player,
+                resetManager,
+                "You step onto the pressure plates without thinking.\n"
+                "The floor collapses under you.",
+                "Do not cross the pressure plates without the safe pattern."
+            );
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: mirror death.
         if (currentSceneId == 94) {
             player.unlockMirrorWord();
-            handleDeath(player, resetManager, "The mirror pulls you in and everything turns black.", "The mirror word is OPEN.");
+
+            handleDeath(
+                player,
+                resetManager,
+                "You touch the largest mirror.\n"
+                "Your reflection grabs your hand and pulls you through the glass.",
+                "The mirror word is OPEN."
+            );
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: gas death.
         if (currentSceneId == 95) {
             player.unlockGasSwitch();
-            handleDeath(player, resetManager, "You ignore the switch. The lower room fills with gas and you collapse.", "Turn on ventilation before entering the gas room.");
+
+            handleDeath(
+                player,
+                resetManager,
+                "You open the trapdoor without turning on the ventilation.\n"
+                "The lower room is full of gas.\n"
+                "You breathe once, then collapse.",
+                "Turn on ventilation before entering the gas room."
+            );
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: fake exit death.
         if (currentSceneId == 96) {
             player.unlockFakeExit();
-            handleDeath(player, resetManager, "You run toward the bright exit, but it is only a trap.", "The bright exit is fake.");
+
+            handleDeath(
+                player,
+                resetManager,
+                "You run toward the bright exit.\n"
+                "The sign flickers and disappears.\n"
+                "The floor opens beneath you.",
+                "The bright exit is fake."
+            );
             currentSceneId = 1;
             continue;
         }
 
+        // Special action: forcing final door.
         if (currentSceneId == 97) {
-            handleDeath(player, resetManager, "You force the final door. The loop rejects you.", "The final door opens only with the word OPEN.");
+            handleDeath(
+                player,
+                resetManager,
+                "You try to force the final door open.\n"
+                "The carved word begins to glow.\n"
+                "The loop rejects you and crushes the room around you.",
+                "The final door opens only with the word OPEN."
+            );
             currentSceneId = 1;
             continue;
+        }
+
+        // Special action: enter remembered code.
+        if (currentSceneId == 98) {
+            if (player.knowsDoorCode()) {
+                currentSceneId = 10;
+            } else {
+                handleDeath(
+                    player,
+                    resetManager,
+                    "You try to enter a code you never actually learned.\n"
+                    "The keypad detects the wrong attempt.\n"
+                    "A bomb inside the door explodes.",
+                    "Find the code before using the keypad."
+                );
+                currentSceneId = 1;
+            }
+
+            continue;
+        }
+
+        // Special action: cross pressure plates.
+        if (currentSceneId == 99) {
+            if (player.knowsHallwayPattern()) {
+                cout << endl;
+                cout << "You follow the remembered pattern: left, right, forward." << endl;
+                cout << "The pressure plates click, but nothing collapses." << endl;
+                currentSceneId = 6;
+            } else {
+                handleDeath(
+                    player,
+                    resetManager,
+                    "You try to cross the pressure plates without knowing the safe steps.\n"
+                    "The plates sink under your feet and the ceiling falls.",
+                    "Find the pattern before crossing the pressure plates."
+                );
+                currentSceneId = 1;
+            }
+
+            continue;
+        }
+
+        // Special action: turn on ventilation and enter gas room.
+        if (currentSceneId == 100) {
+            player.unlockGasSwitch();
+
+            cout << endl;
+            cout << "You turn on the ventilation switch." << endl;
+            cout << "The pipes start shaking, and the green gas begins to clear." << endl;
+            cout << "You open the trapdoor and climb down." << endl;
+
+            currentSceneId = 8;
+            continue;
+        }
+
+        // Special action: hidden hatch from control room.
+        if (currentSceneId == 101) {
+            if (player.knowsGasSwitch()) {
+                cout << endl;
+                cout << "You open the hidden floor hatch." << endl;
+                cout << "Because you remember the ventilation system, you avoid the gas trap." << endl;
+                currentSceneId = 8;
+            } else {
+                handleDeath(
+                    player,
+                    resetManager,
+                    "You open the hidden floor hatch without checking the air below.\n"
+                    "Gas rises from the lower room and fills your lungs.",
+                    "The lower hatch is dangerous without ventilation."
+                );
+                currentSceneId = 1;
+            }
+
+            continue;
+        }
+
+        // Safety check in case the program ever points to a scene that does not exist.
+        if (scenes.find(currentSceneId) == scenes.end()) {
+            cout << "Error: Scene " << currentSceneId << " does not exist." << endl;
+            player.setGameOver(true);
+            break;
         }
 
         Scene currentScene = scenes[currentSceneId];
 
-        cout << endl;
+        printSceneHeader("SCENE " + to_string(currentSceneId));
         currentScene.displayScene();
 
         if (currentSceneId == 4) {
@@ -291,18 +461,6 @@ void GameEngine::start() {
         if (currentSceneId == 6) {
             player.unlockMirrorWord();
             cout << "Memory unlocked: Mirror word OPEN" << endl;
-        }
-
-        if (currentSceneId == 8 && !player.knowsGasSwitch()) {
-            handleDeath(player, resetManager, "You enter the gas room without knowing about the ventilation switch. You collapse.", "The gas room needs ventilation first.");
-            currentSceneId = 1;
-            continue;
-        }
-
-        if (currentSceneId == 10 && !player.knowsDoorCode()) {
-            handleDeath(player, resetManager, "You enter a code without actually knowing it. The keypad rejects you.", "Find the code before using the keypad.");
-            currentSceneId = 1;
-            continue;
         }
 
         if (currentSceneId == 13) {
@@ -322,13 +480,18 @@ void GameEngine::start() {
                 player.setTrueEndingReached(true);
                 player.setGameOver(true);
 
-                cout << endl;
-                cout << "TRUE ENDING REACHED" << endl;
+                printSceneHeader("TRUE ENDING");
                 cout << "You escaped after learning from every reset." << endl;
                 showPlayerMemory(player);
                 break;
             } else {
-                handleDeath(player, resetManager, "You reach the final door, but you do not understand the loop yet.", "You need more memories before escaping.");
+                handleDeath(
+                    player,
+                    resetManager,
+                    "You reach the final door, but you do not understand the loop yet.\n"
+                    "The door stays shut and the room resets.",
+                    "You need more memories before escaping."
+                );
                 currentSceneId = 1;
                 continue;
             }
@@ -354,16 +517,10 @@ void GameEngine::start() {
             continue;
         }
 
-        if (currentSceneId == 5 && playerChoice == 2 && !player.knowsHallwayPattern()) {
-            handleDeath(player, resetManager, "You try to follow a pattern you never learned. The floor collapses.", "Find the pattern before crossing the pressure plates.");
-            currentSceneId = 1;
-            continue;
-        }
-
         sceneHistory.push(currentSceneId);
         currentSceneId = choices[playerChoice - 1].getNextSceneId();
     }
 
-    cout << endl;
+    printDivider();
     cout << "Game finished." << endl;
 }
