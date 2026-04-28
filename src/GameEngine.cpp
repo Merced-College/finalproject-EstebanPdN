@@ -1,5 +1,7 @@
 #include <iostream>
 #include "GameEngine.h"
+#include "Scene.h"
+#include "Choice.h"
 
 using namespace std;
 
@@ -9,10 +11,19 @@ void GameEngine::start() {
     cout << "==============================" << endl;
     cout << endl;
 
-    cout << "You wake up in a dark room." << endl;
-    cout << "You do not remember how you got here." << endl;
-    cout << "Something feels wrong..." << endl;
-    cout << endl;
+    Scene entrance(
+        1,
+        "You wake up in a dark room.\n"
+        "You do not remember how you got here.\n"
+        "In front of you, there is a locked door.\n"
+        "To your left, there is a dark hallway."
+    );
 
-    cout << "The game has started." << endl;
+    entrance.addChoice(Choice("Try to open the locked door.", 2));
+    entrance.addChoice(Choice("Walk into the dark hallway.", 3));
+    entrance.addChoice(Choice("Look around the room.", 4));
+
+    entrance.displayScene();
+
+    cout << "For now, the game only displays the first scene." << endl;
 }
