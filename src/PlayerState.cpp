@@ -2,22 +2,21 @@
 
 PlayerState::PlayerState() {
     deaths = 0;
-    hasKey = false;
-    knowsSecret = false;
     gameOver = false;
     trueEndingReached = false;
+
+    remembersDoorCode = false;
+    remembersLeftDoorDeath = false;
+    remembersFrontDoorDeath = false;
+    remembersSafeDoor = false;
+    remembersHallwayPattern = false;
+    remembersMirrorWord = false;
+    remembersGasSwitch = false;
+    remembersFakeExit = false;
 }
 
 int PlayerState::getDeaths() const {
     return deaths;
-}
-
-bool PlayerState::getHasKey() const {
-    return hasKey;
-}
-
-bool PlayerState::getKnowsSecret() const {
-    return knowsSecret;
 }
 
 bool PlayerState::getGameOver() const {
@@ -28,16 +27,40 @@ bool PlayerState::getTrueEndingReached() const {
     return trueEndingReached;
 }
 
+bool PlayerState::knowsDoorCode() const {
+    return remembersDoorCode;
+}
+
+bool PlayerState::knowsLeftDoorDeath() const {
+    return remembersLeftDoorDeath;
+}
+
+bool PlayerState::knowsFrontDoorDeath() const {
+    return remembersFrontDoorDeath;
+}
+
+bool PlayerState::knowsSafeDoor() const {
+    return remembersSafeDoor;
+}
+
+bool PlayerState::knowsHallwayPattern() const {
+    return remembersHallwayPattern;
+}
+
+bool PlayerState::knowsMirrorWord() const {
+    return remembersMirrorWord;
+}
+
+bool PlayerState::knowsGasSwitch() const {
+    return remembersGasSwitch;
+}
+
+bool PlayerState::knowsFakeExit() const {
+    return remembersFakeExit;
+}
+
 void PlayerState::addDeath() {
     deaths++;
-}
-
-void PlayerState::setHasKey(bool value) {
-    hasKey = value;
-}
-
-void PlayerState::setKnowsSecret(bool value) {
-    knowsSecret = value;
 }
 
 void PlayerState::setGameOver(bool value) {
@@ -48,7 +71,64 @@ void PlayerState::setTrueEndingReached(bool value) {
     trueEndingReached = value;
 }
 
+void PlayerState::unlockDoorCode() {
+    remembersDoorCode = true;
+    addMemory("Door code: 314");
+}
+
+void PlayerState::unlockLeftDoorDeath() {
+    remembersLeftDoorDeath = true;
+    addMemory("The left door kills you.");
+}
+
+void PlayerState::unlockFrontDoorDeath() {
+    remembersFrontDoorDeath = true;
+    addMemory("The front door kills you.");
+}
+
+void PlayerState::unlockSafeDoor() {
+    remembersSafeDoor = true;
+    addMemory("After testing the other doors, the right door seems safe.");
+}
+
+void PlayerState::unlockHallwayPattern() {
+    remembersHallwayPattern = true;
+    addMemory("Hallway pattern: left, right, forward.");
+}
+
+void PlayerState::unlockMirrorWord() {
+    remembersMirrorWord = true;
+    addMemory("Mirror word: OPEN");
+}
+
+void PlayerState::unlockGasSwitch() {
+    remembersGasSwitch = true;
+    addMemory("The gas room is safe only after using the ventilation switch.");
+}
+
+void PlayerState::unlockFakeExit() {
+    remembersFakeExit = true;
+    addMemory("The bright exit is fake.");
+}
+
+void PlayerState::addMemory(string memory) {
+    if (memory == "") {
+        return;
+    }
+
+    for (int i = 0; i < memoryLog.size(); i++) {
+        if (memoryLog[i] == memory) {
+            return;
+        }
+    }
+
+    memoryLog.push_back(memory);
+}
+
+vector<string> PlayerState::getMemoryLog() const {
+    return memoryLog;
+}
+
 void PlayerState::resetForNewRun() {
-    hasKey = false;
     gameOver = false;
 }

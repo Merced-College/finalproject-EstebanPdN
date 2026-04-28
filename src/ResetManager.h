@@ -1,18 +1,20 @@
 #ifndef RESETMANAGER_H
 #define RESETMANAGER_H
 
+#include <string>
 #include "PlayerState.h"
 
+using namespace std;
+
 /*
-Handles the reset system for the game
-When the player dies or reaches a bad ending, this updates
-the player's death count and prepares the next run.
+Handles deaths and resets. The player loses temporary progress,
+but keeps memories learned from previous attempts
 */
 
 class ResetManager {
 public:
     void triggerReset(PlayerState& player);
-    void displayResetMessage(const PlayerState& player) const;
+    void displayResetMessage(const PlayerState& player, string memoryGained) const;
 };
 
 #endif
